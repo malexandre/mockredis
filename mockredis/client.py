@@ -30,8 +30,9 @@ class MockRedis(object):
     A Mock for a redis-py Redis object
 
     Expire functionality must be explicitly
-    invoked using do_expire(time). Automatic
-    expiry is NOT supported.
+    invoked using do_expire(). Automatic
+    expiry is NOT supported. Please refer to
+    the README on how to manage time expiration.
     """
 
     def __init__(self,
@@ -257,7 +258,7 @@ class MockRedis(object):
 
     def do_expire(self):
         """
-        Expire objects assuming now == time
+        Expire objects regarding the internal clock 'now()' value
         """
         # Deep copy to avoid RuntimeError: dictionary changed size during iteration
         _timeouts = deepcopy(self.timeouts)

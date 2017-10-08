@@ -24,6 +24,34 @@ Or:
 
     @patch('redis.StrictRedis', mock_strict_redis_client)
 
+
+### Time expiration
+
+For time expiration management, a custom clock has to be implemented to overwrite
+the default internal clock. The default internal clock only uses `datetime.now()`
+and won't be able to simulate time jump. A simple clock implementation with the
+ability to add or substract time can be found below. Then, instead of using
+`mock_redis_client` or `mock_strict_redis_client`, use
+`MockRedis(clock=CustomClock())` or `MockRedis(strict=True, clock=CustomClock())`.
+The clock is then accessible through `redis.client`.
+
+```python
+from datetime import datetime, timedelta
+from mockredis import clock
+
+
+class CustomClock(clock.Clock):
+    def __init__(self):
+        self.timeout = 0
+
+    def add_timeout(self, timeout):
+        self.timeout += timeout
+
+    def now(self):
+        return datetime.now() + timedelta(seconds=self.timeout)
+```
+
+
 ## Testing
 
 Many unit tests exist to verify correctness of mock functionality. In addition, most
